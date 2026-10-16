@@ -1068,10 +1068,6 @@ function finishPattern() {
 
     patternCard.classList.add("pattern-success");
 
-    localStorage.setItem(
-      "aachuuuuUnlocked",
-      "true"
-    );
 
     setTimeout(() => {
 
@@ -1209,28 +1205,9 @@ if (patternLock) {
 }
 
 /* =========================================================
-   REMEMBER UNLOCKED DEVICE
+   LOCK EVERY TIME THE WEBSITE IS OPENED
    ========================================================= */
 
 if (patternScreen) {
-
-  const alreadyUnlocked =
-    localStorage.getItem(
-      "aachuuuuUnlocked"
-    ) === "true";
-
-  if (alreadyUnlocked) {
-
-    patternScreen.remove();
-
-    document.body.classList.remove(
-      "password-locked"
-    );
-
-  } else {
-
-    document.body.classList.add(
-      "password-locked"
-    );
-  }
+  document.body.classList.add("password-locked");
 }
