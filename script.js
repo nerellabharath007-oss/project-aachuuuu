@@ -799,3 +799,438 @@ function createBirthdayBurst() {
 window.addEventListener("load", () => {
   setTimeout(createBirthdayBurst, 1800);
 });
+/* =========================================================
+   PATTERN LOCK — PROJECT AACHUUUU
+   ========================================================= */
+
+const patternLock = document.getElementById("pattern-lock");
+const patternScreen = document.getElementById("password-screen");
+const patternStatus = document.getElementById("pattern-status");
+const patternCard = document.querySelector(".pattern-card");
+const patternLines = document.getElementById("pattern-lines");
+
+const patternDots = [
+  ...document.querySelectorAll(".pattern-dot")
+];
+
+/*
+   YOUR SECRET PATTERN
+
+   1  2  3
+   4  5  6
+   7  8  9
+
+   Current pattern:
+   1 → 2 → 5 → 8 → 9
+*/
+
+const SECRET_PATTERN = [6,5,4,9,3,8,2,7];
+
+let currentPattern = [];
+let drawingPattern = false;
+let pointerPosition = { x: 0, y: 0 };
+
+function getDotCenter(dot) {
+  const lockRect = patternLock.getBoundingClientRect();
+  const dotRect = dot.getBoundingClientRect();
+
+  return {
+    x:
+      dotRect.left +
+      dotRect.width / 2 -
+      lockRect.left,
+
+    y:
+      dotRect.top +
+      dotRect.height / 2 -
+      lockRect.top
+  };
+}
+
+function getPointerPosition(event) {
+  const rect = patternLock.getBoundingClientRect();
+
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
+}
+
+function getDotAtPosition(x, y) {
+
+  for (const dot of patternDots) {
+
+    const center = getDotCenter(dot);
+
+    const distance = Math.sqrt(
+      Math.pow(x - center.x, 2) +
+      Math.pow(y - center.y, 2)
+    );
+
+    if (distance < 35) {
+      return Number(dot.dataset.dot);
+    }
+  }
+
+  return null;
+}
+
+function addPatternDot(dotNumber) {
+
+  if (currentPattern.includes(dotNumber)) {
+    return;
+  }
+
+  /*
+     Automatically include the middle dot when
+     jumping across it.
+
+     Example:
+     1 → 3 becomes 1 → 2 → 3
+  */
+
+  if (currentPattern.length > 0) {
+
+    const previous =
+      currentPattern[currentPattern.length - 1];
+
+    const middleDots = {
+      "1-3": 2,
+      "3-1": 2,
+
+      "1-7": 4,
+      "7-1": 4,
+
+      "3-7": 5,
+      "7-3": 5,
+
+      "9-1": 5,
+      "1-9": 5,
+
+      "2-8": 5,
+      "8-2": 5,
+
+      "4-6": 5,
+      "6-4": 5,
+
+      "7-9": 8,
+      "9-7": 8,
+
+      "3-9": 6,
+      "9-3": 6
+    };
+
+    const key = `${previous}-${dotNumber}`;
+
+    if (
+      middleDots[key] &&
+      !currentPattern.includes(middleDots[key])
+    ) {
+      currentPattern.push(middleDots[key]);
+      activateDot(middleDots[key]);
+    }
+  }
+
+  currentPattern.push(dotNumber);
+
+  activateDot(dotNumber);
+  updatePatternLines();
+}
+
+function activateDot(dotNumber) {
+
+  const dot =
+    document.querySelector(
+      `.pattern-dot[data-dot="${dotNumber}"]`
+    );
+
+  if (dot) {
+    dot.classList.add("active");
+  }
+}
+
+function clearPatternVisuals() {
+
+  patternDots.forEach(dot => {
+    dot.classList.remove("active", "wrong");
+  });
+
+  while (patternLines.firstChild) {
+    patternLines.removeChild(patternLines.firstChild);
+  }
+
+  const previewLine =
+    document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "line"
+    );
+
+  previewLine.id = "pattern-line-preview";
+
+  patternLines.appendChild(previewLine);
+}
+
+function updatePatternLines() {
+
+  while (patternLines.firstChild) {
+    patternLines.removeChild(patternLines.firstChild);
+  }
+
+  for (let i = 0; i < currentPattern.length - 1; i++) {
+
+    const startDot =
+      document.querySelector(
+        `.pattern-dot[data-dot="${currentPattern[i]}"]`
+      );
+
+    const endDot =
+      document.querySelector(
+        `.pattern-dot[data-dot="${currentPattern[i + 1]}"]`
+      );
+
+    if (!startDot || !endDot) continue;
+
+    const start = getDotCenter(startDot);
+    const end = getDotCenter(endDot);
+
+    const line =
+      document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+      );
+
+    line.setAttribute("x1", start.x);
+    line.setAttribute("y1", start.y);
+    line.setAttribute("x2", end.x);
+    line.setAttribute("y2", end.y);
+
+    patternLines.appendChild(line);
+  }
+
+  /*
+     Draw a temporary line from the last selected
+     dot to the user's finger/mouse.
+  */
+
+  if (currentPattern.length > 0 && drawingPattern) {
+
+    const lastDot =
+      document.querySelector(
+        `.pattern-dot[data-dot="${currentPattern[currentPattern.length - 1]}"]`
+      );
+
+    if (lastDot) {
+
+      const start = getDotCenter(lastDot);
+
+      const preview =
+        document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "line"
+        );
+
+      preview.setAttribute("x1", start.x);
+      preview.setAttribute("y1", start.y);
+
+      preview.setAttribute("x2", pointerPosition.x);
+      preview.setAttribute("y2", pointerPosition.y);
+
+      preview.style.opacity = "0.45";
+
+      patternLines.appendChild(preview);
+    }
+  }
+}
+
+function finishPattern() {
+
+  if (!drawingPattern) return;
+
+  drawingPattern = false;
+
+  /*
+     Remove preview line.
+  */
+
+  if (currentPattern.length === 0) return;
+
+  const isCorrect =
+    JSON.stringify(currentPattern) ===
+    JSON.stringify(SECRET_PATTERN);
+
+  if (isCorrect) {
+
+    patternStatus.textContent =
+      "That's our little secret. ♡";
+
+    patternStatus.classList.remove("error");
+    patternStatus.classList.add("success");
+
+    patternCard.classList.add("pattern-success");
+
+    localStorage.setItem(
+      "aachuuuuUnlocked",
+      "true"
+    );
+
+    setTimeout(() => {
+
+      patternScreen.classList.add("unlocking");
+
+      document.body.classList.remove(
+        "password-locked"
+      );
+
+      setTimeout(() => {
+        patternScreen.remove();
+      }, 1100);
+
+    }, 500);
+
+  } else {
+
+    patternStatus.textContent =
+      "Hmm... that's not our little secret. Try again ♡";
+
+    patternStatus.classList.remove("success");
+    patternStatus.classList.add("error");
+
+    patternDots.forEach(dot => {
+      if (currentPattern.includes(Number(dot.dataset.dot))) {
+        dot.classList.add("wrong");
+      }
+    });
+
+    patternCard.classList.remove("pattern-error");
+
+    void patternCard.offsetWidth;
+
+    patternCard.classList.add("pattern-error");
+
+    setTimeout(() => {
+
+      currentPattern = [];
+
+      clearPatternVisuals();
+
+      patternStatus.textContent =
+        "Draw the pattern to unlock ♡";
+
+      patternStatus.classList.remove("error");
+
+    }, 700);
+  }
+}
+
+/* =========================================================
+   POINTER EVENTS
+   ========================================================= */
+
+if (patternLock) {
+
+  patternLock.addEventListener(
+    "pointerdown",
+    event => {
+
+      event.preventDefault();
+
+      drawingPattern = true;
+
+      currentPattern = [];
+
+      clearPatternVisuals();
+
+      pointerPosition =
+        getPointerPosition(event);
+
+      const dot =
+        getDotAtPosition(
+          pointerPosition.x,
+          pointerPosition.y
+        );
+
+      if (dot) {
+        addPatternDot(dot);
+      }
+
+      patternLock.setPointerCapture(
+        event.pointerId
+      );
+    }
+  );
+
+  patternLock.addEventListener(
+    "pointermove",
+    event => {
+
+      if (!drawingPattern) return;
+
+      event.preventDefault();
+
+      pointerPosition =
+        getPointerPosition(event);
+
+      const dot =
+        getDotAtPosition(
+          pointerPosition.x,
+          pointerPosition.y
+        );
+
+      if (dot) {
+        addPatternDot(dot);
+      }
+
+      updatePatternLines();
+    }
+  );
+
+  patternLock.addEventListener(
+    "pointerup",
+    event => {
+
+      event.preventDefault();
+
+      finishPattern();
+
+      try {
+        patternLock.releasePointerCapture(
+          event.pointerId
+        );
+      } catch (error) {}
+    }
+  );
+
+  patternLock.addEventListener(
+    "pointercancel",
+    () => {
+      finishPattern();
+    }
+  );
+}
+
+/* =========================================================
+   REMEMBER UNLOCKED DEVICE
+   ========================================================= */
+
+if (patternScreen) {
+
+  const alreadyUnlocked =
+    localStorage.getItem(
+      "aachuuuuUnlocked"
+    ) === "true";
+
+  if (alreadyUnlocked) {
+
+    patternScreen.remove();
+
+    document.body.classList.remove(
+      "password-locked"
+    );
+
+  } else {
+
+    document.body.classList.add(
+      "password-locked"
+    );
+  }
+}

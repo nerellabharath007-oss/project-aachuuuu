@@ -3074,3 +3074,610 @@ footer {
       rotate(180deg);
   }
 }
+/* =========================================================
+   PASSWORD LOCK — PROJECT AACHUUUU
+   ========================================================= */
+
+.password-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    radial-gradient(circle at 50% 35%,
+      rgba(255, 180, 205, 0.16),
+      transparent 32%),
+    radial-gradient(circle at 20% 80%,
+      rgba(255, 120, 170, 0.10),
+      transparent 30%),
+    #120b12;
+
+  overflow: hidden;
+
+  transition:
+    opacity 1s ease,
+    visibility 1s ease;
+}
+
+/* Soft cinematic glow */
+
+.password-glow {
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 105, 155, 0.12);
+
+  filter: blur(90px);
+
+  animation: passwordGlow 5s ease-in-out infinite alternate;
+
+  pointer-events: none;
+}
+
+@keyframes passwordGlow {
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: scale(1.15);
+    opacity: 0.9;
+  }
+}
+
+/* Main card */
+
+.password-card {
+  position: relative;
+  z-index: 2;
+
+  width: min(440px, 100%);
+
+  padding: 48px 36px 38px;
+
+  text-align: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.09),
+      rgba(255, 255, 255, 0.035)
+    );
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  animation: passwordCardEnter 1s ease forwards;
+}
+
+@keyframes passwordCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Heart */
+
+.password-heart {
+  margin-bottom: 12px;
+
+  font-size: 42px;
+  line-height: 1;
+
+  color: #ffb3cf;
+
+  text-shadow:
+    0 0 20px rgba(255, 120, 170, 0.6),
+    0 0 45px rgba(255, 120, 170, 0.3);
+
+  animation: passwordHeart 2.4s ease-in-out infinite;
+}
+
+@keyframes passwordHeart {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* Small heading */
+
+.password-eyebrow {
+  margin: 0 0 14px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.25em;
+
+  color: rgba(255, 210, 225, 0.7);
+}
+
+/* Main title */
+
+.password-card h1 {
+  margin: 0;
+
+  font-size: clamp(30px, 6vw, 42px);
+
+  line-height: 1.15;
+
+  font-weight: 500;
+
+  color: #fff;
+}
+
+.password-card h1 span {
+  display: block;
+
+  margin-top: 4px;
+
+  font-style: italic;
+
+  color: #ffb5d0;
+}
+
+/* Description */
+
+.password-description {
+  max-width: 330px;
+
+  margin: 18px auto 28px;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+
+  color: rgba(255, 255, 255, 0.62);
+}
+
+/* Input */
+
+.password-input-wrap {
+  position: relative;
+
+  width: 100%;
+
+  margin-bottom: 14px;
+}
+
+.password-input-wrap input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 15px 50px 15px 18px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  border-radius: 14px;
+
+  outline: none;
+
+  background: rgba(0, 0, 0, 0.22);
+
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.password-input-wrap input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.password-input-wrap input:focus {
+  border-color: rgba(255, 170, 200, 0.6);
+
+  background: rgba(0, 0, 0, 0.3);
+
+  box-shadow:
+    0 0 0 4px rgba(255, 130, 175, 0.08),
+    0 0 25px rgba(255, 100, 160, 0.12);
+}
+
+/* Show/hide button */
+
+#password-toggle {
+  position: absolute;
+
+  right: 8px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: rgba(255, 255, 255, 0.45);
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+#password-toggle:hover {
+  color: #ffb5d0;
+
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Unlock button */
+
+.password-unlock {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  width: 100%;
+
+  padding: 15px 20px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #ff9fc5,
+    #ff76aa
+  );
+
+  color: #351522;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 30px rgba(255, 90, 150, 0.2);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.password-unlock:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 15px 40px rgba(255, 90, 150, 0.35);
+}
+
+.password-unlock:active {
+  transform: translateY(0);
+}
+
+/* Error */
+
+.password-error {
+  min-height: 20px;
+
+  margin: 14px 0 0;
+
+  font-size: 12px;
+
+  color: #ff9fbd;
+
+  opacity: 0;
+
+  transform: translateY(-5px);
+
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.password-error.show {
+  opacity: 1;
+
+  transform: translateY(0);
+}
+
+/* Bottom hint */
+
+.password-hint {
+  margin: 20px 0 0;
+
+  font-size: 11px;
+
+  letter-spacing: 0.04em;
+
+  color: rgba(255, 255, 255, 0.32);
+}
+
+/* Wrong password shake */
+
+.password-card.shake {
+  animation: passwordShake 0.45s ease;
+}
+
+@keyframes passwordShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-8px);
+  }
+
+  40% {
+    transform: translateX(8px);
+  }
+
+  60% {
+    transform: translateX(-6px);
+  }
+
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+/* Unlock animation */
+
+.password-screen.unlocking {
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+}
+
+/* Prevent scrolling while locked */
+
+body.password-locked {
+  overflow: hidden;
+}
+
+/* Mobile */
+
+@media (max-width: 520px) {
+
+  .password-screen {
+    padding: 18px;
+  }
+
+  .password-card {
+    padding: 40px 24px 30px;
+
+    border-radius: 24px;
+  }
+
+  .password-heart {
+    font-size: 36px;
+  }
+
+  .password-description {
+    font-size: 13px;
+  }
+
+}
+/* =========================================================
+   ROMANTIC PATTERN LOCK
+   ========================================================= */
+
+.pattern-card {
+  text-align: center;
+}
+
+.pattern-lock {
+  width: 250px;
+  height: 250px;
+  margin: 28px auto 18px;
+  position: relative;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+
+  touch-action: none;
+  user-select: none;
+}
+
+.pattern-dot {
+  width: 18px;
+  height: 18px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  border: 2px solid rgba(255, 255, 255, 0.8);
+
+  justify-self: center;
+  align-self: center;
+
+  position: relative;
+  z-index: 5;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pattern-dot::after {
+  content: "";
+  position: absolute;
+
+  width: 42px;
+  height: 42px;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+}
+
+.pattern-dot.active {
+  background: #ffffff;
+
+  transform: scale(1.35);
+
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.9),
+    0 0 25px rgba(255, 150, 210, 0.8),
+    0 0 45px rgba(255, 100, 190, 0.45);
+}
+
+.pattern-dot.wrong {
+  background: #ff8fae;
+  border-color: #ff8fae;
+
+  box-shadow:
+    0 0 15px rgba(255, 80, 130, 0.9),
+    0 0 35px rgba(255, 80, 130, 0.5);
+}
+
+.pattern-lines {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+
+  overflow: visible;
+
+  z-index: 2;
+}
+
+.pattern-lines line {
+  stroke: rgba(255, 190, 225, 0.95);
+  stroke-width: 5;
+  stroke-linecap: round;
+
+  filter:
+    drop-shadow(0 0 5px rgba(255, 160, 215, 0.9))
+    drop-shadow(0 0 15px rgba(255, 100, 190, 0.5));
+}
+
+.pattern-status {
+  min-height: 24px;
+
+  margin: 8px 0 0;
+
+  font-size: 0.85rem;
+
+  color: rgba(255, 255, 255, 0.75);
+
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.pattern-status.success {
+  color: #ffd6eb;
+
+  text-shadow:
+    0 0 10px rgba(255, 170, 220, 0.8);
+}
+
+.pattern-status.error {
+  color: #ff9ab8;
+
+  animation: patternStatusShake 0.35s ease;
+}
+
+@keyframes patternStatusShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-5px);
+  }
+
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.pattern-card.pattern-success {
+  animation: patternSuccess 0.8s ease;
+}
+
+@keyframes patternSuccess {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.035);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pattern-card.pattern-error {
+  animation: passwordShake 0.45s ease;
+}
+
+@media (max-width: 500px) {
+
+  .pattern-lock {
+    width: 220px;
+    height: 220px;
+  }
+
+  .pattern-dot {
+    width: 16px;
+    height: 16px;
+  }
+
+}
